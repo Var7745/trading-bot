@@ -853,8 +853,19 @@ def analyze_coin_mtf(user_symbol):
     avg_candle_size = sma([c['high'] - c['low'] for c in ohlcv_main[-20:]], 20)
     current_candle_size = ohlcv_main[-1]['high'] - ohlcv_main[-1]['low']
     if current_candle_size > FAKE_BREAKOUT_MULTIPLIER * avg_candle_size:
-        logger.info(f"{user_symbol} fake breakout: candle too large")
-        return None
+    logger.info(f"{user_symbol} fake breakout: candle too large")
+    return {
+        "symbol": user_symbol,
+        "signal": "HOLD",
+        "confidence": 0,
+        "grade": "C",
+        "price": price,
+        "rsi": 0,
+        "trend_main": "UNKNOWN",
+        "trend_confirm": "UNKNOWN",
+        "risk": "HIGH",
+        "entry_comment": "Fake breakout filtered"
+    }
 
     # Volume spike
     avg_vol = sma(volumes_main, 20)
@@ -879,13 +890,34 @@ def analyze_coin_mtf(user_symbol):
     max_atr_percent = float(get_user_setting("max_atr_percent", str(MAX_ATR_PERCENT)))
     atr_percent = (atr_val / price) * 100
     if atr_percent > max_atr_percent:
-        logger.info(f"{user_symbol} ATR% {atr_percent:.2f}% > {max_atr_percent}% – skipping")
-        return None
+    logger.info(f"{user_symbol} ATR% {atr_percent:.2f}% > {max_atr_percent}% – skipping")
+    return {
+        "symbol": user_symbol,
+        "signal": "HOLD",
+        "confidence": 0,
+        "grade": "C",
+        "price": price,
+        "rsi": 0,
+        "trend_main": "UNKNOWN",
+        "trend_confirm": "UNKNOWN",
+        "risk": "HIGH",
+        "entry_comment": "High volatility filtered"
+    }
 
-    # Market regime filter
     if adx_val < MIN_ADX_FOR_TRADE:
-        logger.info(f"{user_symbol} ADX {adx_val:.1f} < {MIN_ADX_FOR_TRADE} – ranging market, skip")
-        return None
+    logger.info(f"{user_symbol} ADX {adx_val:.1f} < {MIN_ADX_FOR_TRADE} – ranging market, skip")
+    return {
+        "symbol": user_symbol,
+        "signal": "HOLD",
+        "confidence": 0,
+        "grade": "C",
+        "price": price,
+        "rsi": 0,
+        "trend_main": "UNKNOWN",
+        "trend_confirm": "UNKNOWN",
+        "risk": "HIGH",
+        "entry_comment": "Low trend strength (ADX)"
+    }
 
     # Confidence score
     conf = 50
