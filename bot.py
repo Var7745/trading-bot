@@ -1038,7 +1038,18 @@ def analyze_coin_mtf(user_symbol):
         sl = tp = None
 
     if sl is not None and (abs(price - sl) < 1e-8 or atr_percent < MIN_ATR_PERCENT):
-        return None
+    return {
+        "symbol": user_symbol,
+        "signal": "HOLD",
+        "confidence": 0,
+        "grade": "C",
+        "price": price,
+        "rsi": 0,
+        "trend_main": "UNKNOWN",
+        "trend_confirm": "UNKNOWN",
+        "risk": "HIGH",
+        "entry_comment": "Invalid SL/ATR condition"
+    }
 
     # Market filters
     use_btc = get_user_setting("use_btc_filter", "true") == "true"
