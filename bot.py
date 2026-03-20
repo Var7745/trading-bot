@@ -826,7 +826,7 @@ if not ohlcv_main or not ohlcv_confirm:
         "trend_confirm": "UNKNOWN",
         "risk": "HIGH",
         "entry_comment": "Data insufficient"
-    }
+        }
 
     closes_main = [c['close'] for c in ohlcv_main]
     volumes_main = [c['volume'] for c in ohlcv_main]
