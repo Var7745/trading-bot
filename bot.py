@@ -107,7 +107,7 @@ LEVERAGE_ATR_THRESHOLD = 2.0         # if ATR% > 2%, max leverage 3
 # Max drawdown stop for backtest
 MAX_DRAWDOWN_PERCENT = 50.0           # stop if capital drops below 50% of initial
 
-COINDZX_BASE = "https://api.coindcx.com"
+COINDZX_PUBLIC = "https://public.coindcx.com"
 ANALYSIS_INTERVAL = 600      # 10 minutes
 STATUS_INTERVAL = 900        # 15 minutes
 
