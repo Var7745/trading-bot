@@ -813,8 +813,20 @@ def analyze_coin_mtf(user_symbol):
     ohlcv_main = get_ohlcv(user_symbol, tf_main, limit=200)
     ohlcv_confirm = get_ohlcv(user_symbol, tf_confirm, limit=200)
 
-    if not ohlcv_main or not ohlcv_confirm or len(ohlcv_main) < 150 or len(ohlcv_confirm) < 150:
-        return None
+if not ohlcv_main or not ohlcv_confirm:
+    logger.warning(f"[ANALYSIS ERROR] Missing data for {user_symbol}")
+    return {
+        "symbol": user_symbol,
+        "signal": "HOLD",
+        "confidence": 0,
+        "grade": "C",
+        "price": 0,
+        "rsi": 0,
+        "trend_main": "UNKNOWN",
+        "trend_confirm": "UNKNOWN",
+        "risk": "HIGH",
+        "entry_comment": "Data insufficient"
+    }
 
     closes_main = [c['close'] for c in ohlcv_main]
     volumes_main = [c['volume'] for c in ohlcv_main]
