@@ -813,7 +813,7 @@ def analyze_coin_mtf(user_symbol):
     ohlcv_main = get_ohlcv(user_symbol, tf_main, limit=200)
     ohlcv_confirm = get_ohlcv(user_symbol, tf_confirm, limit=200)
 
-    if not ohlcv_main or not ohlcv_confirm:
+    if ohlcv_main is None or ohlcv_confirm is None:
         logger.warning(f"[ANALYSIS WARNING] No data for {user_symbol}")
         return {
         "symbol": user_symbol,
@@ -834,6 +834,7 @@ def analyze_coin_mtf(user_symbol):
         "quantity": None,
         "explanation": "No data"
     }
+    
 
     # ADDED SAFETY CHECK: ensure enough candles for indicators
     if len(ohlcv_main) < 50 or len(ohlcv_confirm) < 50:
