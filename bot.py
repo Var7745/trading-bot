@@ -21,6 +21,14 @@ from datetime import datetime, timedelta, timezone
 import statistics
 import math
 
+def adapt_datetime(dt):
+
+return dt.isoformat()
+
+def convert_datetime(s): return datetime. fromisoformat(s.decode())
+
+sqlite3.register_adapter(datetime, adapt_datetime) sqlite3.register_converter("datetime",convert_dat time)
+
 # ================================
 #  CONFIGURATION (EDIT THESE)
 # ================================
