@@ -459,40 +459,48 @@ pair_cache = {}  # in-memory cache for symbol -> pair
 last_error_logged = {}  # key -> timestamp for rate-limited logging
 
 def get_markets():
-    """
-    Fetch the list of markets from CoinDCX.
-    Cached for MARKETS_CACHE_DURATION seconds. Retries up to 3 times on failure.
-    Returns a list of market strings (e.g., "B-BTC_INR").
-    """
     global markets_cache
     now = time.time()
-    # Return cached data if still fresh
+
+    # Return cached data
     if now - markets_cache["timestamp"] < MARKETS_CACHE_DURATION and markets_cache["data"]:
         return markets_cache["data"]
 
     for attempt in range(1, 4):
         try:
             resp = requests.get(f"{COINDZX_BASE}/exchange/v1/markets", timeout=10)
+
             if resp.status_code == 200:
                 data = resp.json()
-                # Ensure data is a list of strings
-                if isinstance(data, list) and data and all(isinstance(item, str) for item in data):
-                    markets_cache = {"timestamp": now, "data": data}
-                    logger.info(f"Markets fetched successfully ({len(data)} pairs)")
-                    return data
+
+                # ✅ FIX: extract symbols from dict
+                symbols = []
+                if isinstance(data, list):
+                    for item in data:
+                        if isinstance(item, dict) and "symbol" in item:
+                            symbols.append(item["symbol"])
+
+                if symbols:
+                    markets_cache = {"timestamp": now, "data": symbols}
+                    logger.info(f"Markets fetched successfully ({len(symbols)} pairs)")
+                    return symbols
                 else:
-                    logger.warning(f"Markets response format unexpected: {type(data)} (attempt {attempt})")
+                    logger.warning(f"Markets format unexpected (attempt {attempt})")
+
             else:
                 logger.warning(f"Markets API returned {resp.status_code} (attempt {attempt})")
+
         except Exception as e:
             logger.warning(f"Markets fetch error: {e} (attempt {attempt})")
+
         time.sleep(2)
 
-    # After retries, return cached data if any, else empty list
+    # fallback
     if markets_cache["data"]:
-        logger.error("Markets fetch failed, using cached data")
+        logger.error("Using cached markets data")
         return markets_cache["data"]
-    logger.error("All markets fetch attempts failed, returning empty list")
+
+    logger.error("Markets fetch failed completely")
     return []
 
 def get_pair_for_symbol(symbol):
