@@ -538,12 +538,10 @@ def get_pair_for_symbol(user_symbol):
         logger.error(f"[ERROR] No pair found for {user_symbol}")
         last_error_logged[key] = now
     return None
-
 def get_ohlcv(symbol, interval, limit=200):
     """
-    Fetch OHLCV data for a symbol with retries.
-    Symbol is first converted to a valid pair via get_pair_for_symbol().
-    Returns list of dicts with keys: open, high, low, close, volume.
+    Fetch OHLCV data for a symbol using CoinDCX PUBLIC API.
+    Returns list of dicts: open, high, low, close, volume.
     """
     pair = get_pair_for_symbol(symbol)
     if not pair:
@@ -551,12 +549,22 @@ def get_ohlcv(symbol, interval, limit=200):
 
     for attempt in range(1, 4):
         try:
-            # CoinDCX market data endpoint uses the pair string directly (e.g., "BTCUSDT")
-            url = f"{COINDZX_BASE}/market_data/candles"
-            params = {"pair": pair, "interval": interval, "limit": limit}
+            url = "https://public.coindcx.com/market_data/candles"
+            params = {
+                "pair": pair,
+                "interval": interval,
+                "limit": limit
+            }
+
             resp = requests.get(url, params=params, timeout=10)
+
             if resp.status_code == 200:
                 data = resp.json()
+
+                if not isinstance(data, list) or not data:
+                    logger.warning(f"[OHLCV EMPTY] {pair}")
+                    return None
+
                 ohlcv = []
                 for c in data:
                     ohlcv.append({
@@ -566,19 +574,27 @@ def get_ohlcv(symbol, interval, limit=200):
                         'close': float(c[4]),
                         'volume': float(c[5])
                     })
+
+                logger.info(f"[OHLCV SUCCESS] {pair}")
                 return ohlcv
+
             else:
-                logger.warning(f"OHLCV fetch for {pair} returned {resp.status_code} (attempt {attempt})")
+                logger.warning(f"[OHLCV ERROR] {pair} -> {resp.status_code} (attempt {attempt})")
+
         except Exception as e:
-            logger.warning(f"OHLCV fetch error for {pair}: {e} (attempt {attempt})")
+            logger.warning(f"[OHLCV EXCEPTION] {pair}: {e} (attempt {attempt})")
+
         time.sleep(2)
 
     key = f"ohlcv_{pair}_{interval}"
     now = time.time()
+
     if key not in last_error_logged or now - last_error_logged[key] > 3600:
-        logger.error(f"All OHLCV fetch attempts failed for {pair} {interval}")
+        logger.error(f"[OHLCV FAILED] {pair} {interval}")
         last_error_logged[key] = now
+
     return None
+
 
 def get_current_price(symbol):
     """
