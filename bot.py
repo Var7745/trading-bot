@@ -24,7 +24,7 @@ import math
 # ================================
 #  CONFIGURATION (EDIT THESE)
 # ================================
-TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"          # <-- Replace with your bot token
+TOKEN = "8553023618:AAH7upKIA9j_zqIYtIhBRKThBOY2HlWe6Ss"          # <-- Replace with your bot token
 CHAT_ID = "1171112800"                     # Your Telegram user ID
 
 DEFAULT_COINS = ["BTCINR", "ETHINR", "XRPINR", "DOGEINR", "SOLINR"]
