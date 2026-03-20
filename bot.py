@@ -890,8 +890,8 @@ def analyze_coin_mtf(user_symbol):
     max_atr_percent = float(get_user_setting("max_atr_percent", str(MAX_ATR_PERCENT)))
     atr_percent = (atr_val / price) * 100
     if atr_percent > max_atr_percent:
-    logger.info(f"{user_symbol} ATR% {atr_percent:.2f}% > {max_atr_percent}% – skipping")
-    return {
+        logger.info(f"{user_symbol} ATR% {atr_percent:.2f}% > {max_atr_percent}% – skipping")
+        return {
         "symbol": user_symbol,
         "signal": "HOLD",
         "confidence": 0,
@@ -905,8 +905,8 @@ def analyze_coin_mtf(user_symbol):
     }
 
     if adx_val < MIN_ADX_FOR_TRADE:
-    logger.info(f"{user_symbol} ADX {adx_val:.1f} < {MIN_ADX_FOR_TRADE} – ranging market, skip")
-    return {
+        logger.info(f"{user_symbol} ADX {adx_val:.1f} < {MIN_ADX_FOR_TRADE} – ranging market, skip")
+        return {
         "symbol": user_symbol,
         "signal": "HOLD",
         "confidence": 0,
@@ -1038,7 +1038,7 @@ def analyze_coin_mtf(user_symbol):
         sl = tp = None
 
     if sl is not None and (abs(price - sl) < 1e-8 or atr_percent < MIN_ATR_PERCENT):
-    return {
+        return {
         "symbol": user_symbol,
         "signal": "HOLD",
         "confidence": 0,
