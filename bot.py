@@ -853,8 +853,8 @@ def analyze_coin_mtf(user_symbol):
     avg_candle_size = sma([c['high'] - c['low'] for c in ohlcv_main[-20:]], 20)
     current_candle_size = ohlcv_main[-1]['high'] - ohlcv_main[-1]['low']
     if current_candle_size > FAKE_BREAKOUT_MULTIPLIER * avg_candle_size:
-    logger.info(f"{user_symbol} fake breakout: candle too large")
-    return {
+        logger.info(f"{user_symbol} fake breakout: candle too large")
+        return {
         "symbol": user_symbol,
         "signal": "HOLD",
         "confidence": 0,
