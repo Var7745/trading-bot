@@ -815,22 +815,47 @@ def analyze_coin_mtf(user_symbol):
 
     if not ohlcv_main or not ohlcv_confirm:
         logger.warning(f"[ANALYSIS WARNING] No data for {user_symbol}")
-        return None
+        return {
+        "symbol": user_symbol,
+        "signal": "HOLD",
+        "confidence": 0,
+        "grade": "C",
+        "grade_score": 0,
+        "price": 0,
+        "rsi": 0,
+        "trend_main": "UNKNOWN",
+        "trend_confirm": "UNKNOWN",
+        "leverage": 1,
+        "liq_risk": "LOW",
+        "sl": 0,
+        "tp": 0,
+        "atr_percent": 0,
+        "position_size": None,
+        "quantity": None,
+        "explanation": "No data"
+    }
 
     # ADDED SAFETY CHECK: ensure enough candles for indicators
     if len(ohlcv_main) < 50 or len(ohlcv_confirm) < 50:
         logger.warning(f"[ANALYSIS WARNING] Not enough candles for {user_symbol}")
         return {
-            "symbol": user_symbol,
-            "signal": "HOLD",
-            "confidence": 0,
-            "grade": "C",
-            "price": 0,
-            "rsi": 0,
-            "trend_main": "UNKNOWN",
-            "trend_confirm": "UNKNOWN",
-            "risk": "HIGH",
-            "entry_comment": "Not enough data"
+           "symbol": user_symbol,
+           "signal": "HOLD",
+           "confidence": 0,
+           "grade": "C",
+           "grade_score": 0,
+           "price": 0,
+           "rsi": 0,
+           "trend_main": "UNKNOWN",
+           "trend_confirm": "UNKNOWN",
+           "leverage": 1,
+           "liq_risk": "LOW",
+           "sl": 0,
+           "tp": 0,
+           "atr_percent": 0,
+           "position_size": None,
+           "quantity": None,
+           "explanation": "Not enough data"
         }
 
     closes_main = [c['close'] for c in ohlcv_main]
